@@ -1,4 +1,10 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 public class Gamestate {
     private enum GameStatus {
@@ -16,8 +22,10 @@ public class Gamestate {
     private Difficulty currentDifficulty = Difficulty.EASY;
     private int[] lastMoveIndex;
     private Subgame[][] board;
+    private int theme = 0;
     int currentPlayer;
     public Gamestate() {
+        setTheme();
         board = new Subgame[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -29,7 +37,7 @@ public class Gamestate {
         this.lastMoveIndex[0]=-1;
         this.lastMoveIndex[1]=-1;
     }
-    public void prompt(Scanner scanner) {
+    private int prompt(Scanner scanner) {
         System.out.println("Current board:");
         printBoard();
         int x;
@@ -39,7 +47,12 @@ public class Gamestate {
             x = -1; // Changed from 3 to enter the while loop
             while(x < 0 || x > 2) {
                 x = Utilities.promptInt(scanner, "Which Board (row 0-2): ");
-                if(x < 0 || x > 2) {
+                if(x==-10) {
+                    resetBoard();
+                    currentState = GameStatus.MAIN_MENU;
+                    currentPlayer = 1;
+                    return 1;
+                } else if(x < 0 || x > 2) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Invalid input.");
                     Utilities.ResetColors();
@@ -49,7 +62,12 @@ public class Gamestate {
             y = -1;
             while(y < 0 || y > 2) {
                 y = Utilities.promptInt(scanner, "Which Board (col 0-2): ");
-                if(y < 0 || y > 2) {
+                if(y==-10) {
+                    resetBoard();
+                    currentState = GameStatus.MAIN_MENU;
+                    currentPlayer = 1;
+                    return 1;
+                } else if(y < 0 || y > 2) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Invalid input.");
                     Utilities.ResetColors();
@@ -60,16 +78,14 @@ public class Gamestate {
             y = lastMoveIndex[1];
             System.out.println("Acting on Board " + x + ", " + y + ".");
         }
-
-
         
         board[x][y].prompt(scanner, currentPlayer);
         lastMoveIndex = board[x][y].getLastMoveIndex();
         currentPlayer = (currentPlayer == 1) ? 2 : 1;
         Utilities.clearScreen();
+        return 0;
     }
-
-    public int checkWinner() {
+    private int checkWinner() {
         int[][] winnerBoard = new int[3][3];
         // Check if any subgame has a winner and update the main board accordingly
         for (int i = 0; i < 3; i++) {
@@ -103,8 +119,7 @@ public class Gamestate {
         }
         return 0;
     }
-
-    public void printBoard() {
+    private void printBoard() {
         for(int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {
                 int subgameRow = i / 3;
@@ -136,17 +151,46 @@ public class Gamestate {
         }
         Utilities.ResetColors();
     }
-
     public void run(Scanner scanner) {
         while(true) {
             int winner = 0;
             switch(currentState) {
                 case GameStatus.MAIN_MENU:
+                    switch(theme) {
+                        case 1:
+                            for(int i = 0; i < 19; i++) {
+                                Utilities.SetColors((i%2==0)?Utilities.Colors.RED:Utilities.Colors.GREEN);
+                                System.out.print("-~=~-");
+                                Utilities.ResetColors();
+                            }
+                            System.out.println();
+                            break;
+                        case 2:
+                            for(int i = 0; i < 19; i++) {
+                                Utilities.SetColors((i%2==0)?Utilities.Colors.MAGENTA:Utilities.Colors.CYAN);
+                                System.out.print("-~=~-");
+                                Utilities.ResetColors();
+                            }
+                            System.out.println();
+                            break;
+                        case 3: 
+                            for(int i = 0; i < 19; i++) {
+                                Utilities.SetColors((i%2==0)?Utilities.Colors.BLUE:Utilities.Colors.YELLOW);
+                                System.out.print("-~=~-");
+                                Utilities.ResetColors();
+                            }
+                            System.out.println();
+                            break;
+                    }
                     System.out.println("Welcome to Ultimate Tic Tac Toe!\n1. Easy Mode\n2. Hard Mode\n3. Instructions\n4. Change Theme\n5. Credits\n6. Exit");
                     int input = 0;
                     while(input < 1 || input > 6) {
                         input = Utilities.promptInt(scanner, "Please select an option (1-6): ");
-                        if(input < 1 || input > 6) {
+                        if(input==-10) {
+                            Utilities.SetColors(Utilities.Colors.RED);
+                            currentState = GameStatus.MAIN_MENU;
+                            Utilities.ResetColors();
+                        } else if(input < 1 || input > 6) {
                             Utilities.SetColors(Utilities.Colors.RED);
                             System.out.println("Invalid input. Please enter a number between 1 and 6.");
                             Utilities.ResetColors();
@@ -162,12 +206,32 @@ public class Gamestate {
                             currentDifficulty = Difficulty.HARD;
                             break;
                         case 3:
-                            System.out.println("**Instructions**\nPress Any Key To Return to Main Menu");
+                            System.out.println("**Instructions**\nPress Enter Key To Return to Main Menu");
                             scanner.next();
                             Utilities.clearScreen();
                             break;
                         case 4:
-                            // Change Theme
+                            int choice = -1;
+                            boolean hitBack = false;
+                            while(true) {
+                                choice = Utilities.promptInt(scanner, "Choose Theme:\n1. Christmas\n2. Cyber\n3. Seaside");
+                                if(choice == -10) {
+                                    break;
+                                } else if(choice < 1 && choice > 3) {
+                                    Utilities.SetColors(Utilities.Colors.RED);
+                                    System.out.println("Invalid Choice. Please enter a number between 1 and 3.");
+                                    Utilities.ResetColors();
+                                } else {
+                                    try (BufferedWriter bw = new BufferedWriter(new FileWriter("settings.csv"))) {
+                                        bw.write(String.valueOf(choice));
+                                        theme = choice;
+                                    } catch (IOException e) {
+                                        System.out.println("Error writing file.");
+                                    }
+                                    break;
+                                }
+                            }
+                            
                             break;
                         case 5:
                             System.out.println("Credits:\nDevelopers: Blake Seale, Joshua Denson\n         .-++++++++++++++=:.    .-++++++++++++++=:.       \n        ..-*###########+-..    .:=*###########+:..      \n         .:+###########=.       .:*###########-.        \n          :+###########*-.      .=*###########-.          \n..........:+############=:......-*############-........... \n:=*********##############********#############*********+-..\n=*######################################################+:.\n=*#######+=+######+=*####*=-::-+#####+=+######==*#######+:.\n=*#######+=+######=-=#####*-..=#####*--+######--++++++++=:.\n=*#######+=+######=:-*#####+:-*#####=.-+######-........... \n=*#######+=+######=..-#####*=+#####+-.-+######-.           \n=*#######+=+######=. :=#####+#####*=..-+######-.       ... \n=*#######+=+######=. .-*##########+:..-+######-.....:--==:.\n=*#######+=+######=.  .=#########*-. .-+######--++*#####+:.\n=*#######+=+######=:...-+#######*=:...-+######==*#######+:.\n=*########*#######*******########******#######*#########+:.\n-+#####################################################*=..\n..::::::::-+######+-:::::-*####=-:::::-+######-::::::::... \n          :+######=.     .=*##*-.    .-+######-.           \n         .:+######=..    .:+##-.     .-+######-.           \n        ..-*######*-..    .-*+:     .:=*######+:..         \n        .-+++++++++=-.     :=-.     .=+++++++++=:.         \n");
@@ -182,7 +246,10 @@ public class Gamestate {
                     break;
                 case GameStatus.IN_GAME:
                     while(true) {
-                        prompt(scanner);
+                        if(prompt(scanner)==1) {
+                            Utilities.clearScreen();
+                            break;
+                        }
                         winner = checkWinner();
                         if(winner != 0) {
                             currentState = GameStatus.GAME_OVER;
@@ -199,6 +266,37 @@ public class Gamestate {
                     currentState = GameStatus.MAIN_MENU;
                     break;
             }
+        }
+    }
+    private void resetBoard() {
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                this.board[i][j].resetBoard();
+            }
+        }
+    }
+    private void setTheme() {
+        String path = "settings.csv";
+        String line = "";
+        ArrayList<String> values = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            while ((line = br.readLine()) != null) {
+                String[] list = line.split(",");
+                for(int i = 0; i < list.length; i++) {
+                    values.add(list[i]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            theme = Integer.parseInt(values.get(0));
+        } catch (NumberFormatException e) {
+            Utilities.SetColors(Utilities.Colors.RED);
+            System.out.println("What??");
+            Utilities.ResetColors();
         }
     }
 }

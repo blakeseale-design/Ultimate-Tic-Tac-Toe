@@ -50,10 +50,12 @@ class Utilities {
         try {
             return Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            if(str.toLowerCase().equals("q")) {
+            if(str.toLowerCase().equals("q") || str.toLowerCase().equals("quit")) {
                 System.out.println("Exiting the game. Goodbye!");
                 System.exit(0);
-            };
+            } else if(str.toLowerCase().equals("b") || str.toLowerCase().equals("back")) {
+                return -10;
+            }
             SetColors(Colors.RED);
             System.out.println("Invalid input. Please enter a valid integer.");
             ResetColors();

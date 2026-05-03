@@ -7,9 +7,18 @@ class Subgame {
     
         public Subgame() {
             this.board = new int[3][3];
+            
             this.lastMoveIndex = new int[2];
             this.lastMoveIndex[0]=-1;
             this.lastMoveIndex[1]=-1;
+        }
+
+        public void resetBoard() {
+            for(int i = 0; i < 3; i++) {
+                for(int j = 0; j < 3; j++) {
+                    this.board[i][j]=0;
+                }
+            }
         }
     
         public boolean makeMove(int row, int col, int player) {
@@ -70,7 +79,11 @@ class Subgame {
             while(x < 0 || x > 2) {
                 System.out.println("Which Row Do You Want to Play On? (row: 0-2): ");
                 x = Utilities.promptInt(scanner, "Enter the row (0-2): ");
-                if(x < 0 || x > 2) {
+                if(x == -10) {
+                    Utilities.SetColors(Utilities.Colors.RED);
+                    System.out.println("Back is not available right now");
+                    Utilities.ResetColors();
+                } if(x < 0 || x > 2) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Invalid input. Please enter a number between 0 and 2.");
                     Utilities.ResetColors();
@@ -80,6 +93,11 @@ class Subgame {
             while(y < 0 || y > 2) {
                 System.out.println("Column (0-2): ");
                 y = Utilities.promptInt(scanner, "Enter the column (0-2): ");
+                if(y == -10) {
+                    Utilities.SetColors(Utilities.Colors.RED);
+                    System.out.println("Back is not available right now");
+                    Utilities.ResetColors();
+                }
                 if(y < 0 || y > 2) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Invalid input. Please enter a number between 0 and 2.");
