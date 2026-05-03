@@ -7,7 +7,14 @@ public class Gamestate {
         GAME_OVER
     }
 
+    private enum Difficulty {
+        EASY,
+        HARD
+    }
+
     private GameStatus currentState = GameStatus.MAIN_MENU;
+    private Difficulty currentDifficulty = Difficulty.EASY;
+    private int[] lastMoveIndex;
     private Subgame[][] board;
     int currentPlayer;
     public Gamestate() {
@@ -18,32 +25,46 @@ public class Gamestate {
             }
         }
         currentPlayer = 1; // Player 1 starts
+        this.lastMoveIndex = new int[2];
+        this.lastMoveIndex[0]=-1;
+        this.lastMoveIndex[1]=-1;
     }
     public void prompt(Scanner scanner) {
         System.out.println("Current board:");
         printBoard();
+        int x;
+        int y;
         
-        int x = -1; // Changed from 3 to enter the while loop
-        while(x < 0 || x > 2) {
-             x = Utilities.promptInt(scanner, "Which Board (row 0-2): ");
-             if(x < 0 || x > 2) {
-                Utilities.SetColors(Utilities.Colors.RED);
-                System.out.println("Invalid input.");
-                Utilities.ResetColors();
-             }
+        if(currentDifficulty == Difficulty.EASY || (lastMoveIndex[0]==-1&&lastMoveIndex[1]==-1)) {
+            x = -1; // Changed from 3 to enter the while loop
+            while(x < 0 || x > 2) {
+                x = Utilities.promptInt(scanner, "Which Board (row 0-2): ");
+                if(x < 0 || x > 2) {
+                    Utilities.SetColors(Utilities.Colors.RED);
+                    System.out.println("Invalid input.");
+                    Utilities.ResetColors();
+                }
+            }
+
+            y = -1;
+            while(y < 0 || y > 2) {
+                y = Utilities.promptInt(scanner, "Which Board (col 0-2): ");
+                if(y < 0 || y > 2) {
+                    Utilities.SetColors(Utilities.Colors.RED);
+                    System.out.println("Invalid input.");
+                    Utilities.ResetColors();
+                }
+            }
+        } else {
+            x = lastMoveIndex[0];
+            y = lastMoveIndex[1];
+            System.out.println("Acting on Board " + x + ", " + y + ".");
         }
 
-        int y = -1;
-        while(y < 0 || y > 2) {
-            y = Utilities.promptInt(scanner, "Which Board (col 0-2): ");
-            if(y < 0 || y > 2) {
-                Utilities.SetColors(Utilities.Colors.RED);
-                System.out.println("Invalid input.");
-                Utilities.ResetColors();
-            }
-        }
+
         
         board[x][y].prompt(scanner, currentPlayer);
+        lastMoveIndex = board[x][y].getLastMoveIndex();
         currentPlayer = (currentPlayer == 1) ? 2 : 1;
         Utilities.clearScreen();
     }
@@ -134,9 +155,11 @@ public class Gamestate {
                     switch(input) {
                         case 1:
                             currentState = GameStatus.IN_GAME;
+                            currentDifficulty = Difficulty.EASY;
                             break;
                         case 2:
                             currentState = GameStatus.IN_GAME;
+                            currentDifficulty = Difficulty.HARD;
                             break;
                         case 3:
                             System.out.println("**Instructions**\nPress Any Key To Return to Main Menu");

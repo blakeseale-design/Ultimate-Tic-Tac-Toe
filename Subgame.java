@@ -3,24 +3,32 @@ import java.util.Scanner;
 class Subgame {
         private int[][] board;
         private int winner=0;
+        private int[] lastMoveIndex;
     
         public Subgame() {
-            board = new int[3][3];
+            this.board = new int[3][3];
+            this.lastMoveIndex = new int[2];
+            this.lastMoveIndex[0]=-1;
+            this.lastMoveIndex[1]=-1;
         }
     
         public boolean makeMove(int row, int col, int player) {
             if (board[row][col] == 0) {
                 board[row][col] = player;
+                lastMoveIndex[0]=row;
+                lastMoveIndex[1]=col;
                 return true;
             }
             return false;
         }
+        public int[] getLastMoveIndex() {
+            return lastMoveIndex;
+        }
     
         public int checkWinner() {
             if(winner != 0) {
-                return winner; // Return the cached winner if already determined
+                return winner;
             }
-            // Check rows and columns
             for (int i = 0; i < 3; i++) {
                 if (board[i][0] != 0 && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
                     winner = board[i][0]; // Row winner
@@ -60,7 +68,7 @@ class Subgame {
             }
             int x = 3;
             while(x < 0 || x > 2) {
-                System.out.println("Which Board Do You Want to Play On? (row: 0-2): ");
+                System.out.println("Which Row Do You Want to Play On? (row: 0-2): ");
                 x = Utilities.promptInt(scanner, "Enter the row (0-2): ");
                 if(x < 0 || x > 2) {
                     Utilities.SetColors(Utilities.Colors.RED);
