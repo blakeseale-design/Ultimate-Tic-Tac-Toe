@@ -66,7 +66,8 @@ class Subgame {
         }
 
         public void prompt(Scanner scanner, int currentPlayer) {
-            System.out.println("Current board:");
+            /*
+            System.out.println("Current board:\n 1 2 3");
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     int symbol = getSymbol(i, j);
@@ -74,23 +75,23 @@ class Subgame {
                     System.out.print(" ");
                 }
                 System.out.println();
-            }
-            int x = 3;
-            while(x < 0 || x > 2) {
+            } */
+            int x = 4;
+            while(x < 1 || x > 3) {
                 System.out.println("Which Row Do You Want to Play On? (row: 0-2): ");
                 x = Utilities.promptInt(scanner, "Enter the row (0-2): ");
                 if(x == -10) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Back is not available right now");
                     Utilities.ResetColors();
-                } if(x < 0 || x > 2) {
+                } if(x < 1 || x > 3) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Invalid input. Please enter a number between 0 and 2.");
                     Utilities.ResetColors();
                 }
             }
-            int y = 3;
-            while(y < 0 || y > 2) {
+            int y = 4;
+            while(y < 1 || y > 3) {
                 System.out.println("Column (0-2): ");
                 y = Utilities.promptInt(scanner, "Enter the column (0-2): ");
                 if(y == -10) {
@@ -98,12 +99,12 @@ class Subgame {
                     System.out.println("Back is not available right now");
                     Utilities.ResetColors();
                 }
-                if(y < 0 || y > 2) {
+                if(y < 1 || y > 3) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Invalid input. Please enter a number between 0 and 2.");
                     Utilities.ResetColors();
                 }
             }
-            makeMove(x, y, currentPlayer);
+            makeMove(x-1, y-1, currentPlayer);
         }
 }

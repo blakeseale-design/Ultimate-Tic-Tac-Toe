@@ -45,14 +45,14 @@ public class Gamestate {
         
         if(currentDifficulty == Difficulty.EASY || (lastMoveIndex[0]==-1&&lastMoveIndex[1]==-1)) {
             x = -1; // Changed from 3 to enter the while loop
-            while(x < 0 || x > 2) {
-                x = Utilities.promptInt(scanner, "Which Board (row 0-2): ");
+            while(x < 1 || x > 3) {
+                x = Utilities.promptInt(scanner, "Which Board (row 1-3): ");
                 if(x==-10) {
                     resetBoard();
                     currentState = GameStatus.MAIN_MENU;
                     currentPlayer = 1;
                     return 1;
-                } else if(x < 0 || x > 2) {
+                } else if(x < 1 || x > 3) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Invalid input.");
                     Utilities.ResetColors();
@@ -60,14 +60,14 @@ public class Gamestate {
             }
 
             y = -1;
-            while(y < 0 || y > 2) {
-                y = Utilities.promptInt(scanner, "Which Board (col 0-2): ");
+            while(y < 1 || y > 3) {
+                y = Utilities.promptInt(scanner, "Which Board (col 1-3): ");
                 if(y==-10) {
                     resetBoard();
                     currentState = GameStatus.MAIN_MENU;
                     currentPlayer = 1;
                     return 1;
-                } else if(y < 0 || y > 2) {
+                } else if(y < 1 || y > 3) {
                     Utilities.SetColors(Utilities.Colors.RED);
                     System.out.println("Invalid input.");
                     Utilities.ResetColors();
@@ -79,8 +79,8 @@ public class Gamestate {
             System.out.println("Acting on Board " + x + ", " + y + ".");
         }
         
-        board[x][y].prompt(scanner, currentPlayer);
-        lastMoveIndex = board[x][y].getLastMoveIndex();
+        board[x-1][y-1].prompt(scanner, currentPlayer);
+        lastMoveIndex = board[x-1][y-1].getLastMoveIndex();
         currentPlayer = (currentPlayer == 1) ? 2 : 1;
         Utilities.clearScreen();
         return 0;
@@ -120,8 +120,16 @@ public class Gamestate {
         return 0;
     }
     private void printBoard() {
+        System.out.println("       1       2       3\n");
         for(int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {
+                if(j==0) {
+                    if((i-1)%3==0) {
+                        System.out.print(" " + String.valueOf((i-1)/3+1) + "   ");
+                    } else {
+                        System.out.print("     ");
+                    }
+                }
                 int subgameRow = i / 3;
                 int subgameCol = j / 3;
                 int cellRow = i % 3;
@@ -144,7 +152,7 @@ public class Gamestate {
                 }
             }
             if((i+1) % 3 == 0 && i != 0 && i < 8) {
-                System.out.println("\n----------------------");
+                System.out.println("\n     ----------------------");
             } else {
                 System.out.println();
             }
@@ -231,7 +239,7 @@ public class Gamestate {
                                     break;
                                 }
                             }
-                            
+                            Utilities.clearScreen();
                             break;
                         case 5:
                             System.out.println("Credits:\nDevelopers: Blake Seale, Joshua Denson\n         .-++++++++++++++=:.    .-++++++++++++++=:.       \n        ..-*###########+-..    .:=*###########+:..      \n         .:+###########=.       .:*###########-.        \n          :+###########*-.      .=*###########-.          \n..........:+############=:......-*############-........... \n:=*********##############********#############*********+-..\n=*######################################################+:.\n=*#######+=+######+=*####*=-::-+#####+=+######==*#######+:.\n=*#######+=+######=-=#####*-..=#####*--+######--++++++++=:.\n=*#######+=+######=:-*#####+:-*#####=.-+######-........... \n=*#######+=+######=..-#####*=+#####+-.-+######-.           \n=*#######+=+######=. :=#####+#####*=..-+######-.       ... \n=*#######+=+######=. .-*##########+:..-+######-.....:--==:.\n=*#######+=+######=.  .=#########*-. .-+######--++*#####+:.\n=*#######+=+######=:...-+#######*=:...-+######==*#######+:.\n=*########*#######*******########******#######*#########+:.\n-+#####################################################*=..\n..::::::::-+######+-:::::-*####=-:::::-+######-::::::::... \n          :+######=.     .=*##*-.    .-+######-.           \n         .:+######=..    .:+##-.     .-+######-.           \n        ..-*######*-..    .-*+:     .:=*######+:..         \n        .-+++++++++=-.     :=-.     .=+++++++++=:.         \n");
