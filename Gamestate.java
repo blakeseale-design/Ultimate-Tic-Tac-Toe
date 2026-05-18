@@ -163,7 +163,7 @@ public class Gamestate {
         while(true) {
             int winner = 0;
             switch(currentState) {
-                case GameStatus.MAIN_MENU:
+                case MAIN_MENU:
                     switch(theme) {
                         case 1:
                             for(int i = 0; i < 19; i++) {
@@ -252,7 +252,7 @@ public class Gamestate {
                             System.exit(0);
                     }
                     break;
-                case GameStatus.IN_GAME:
+                case IN_GAME:
                     while(true) {
                         if(prompt(scanner)==1) {
                             Utilities.clearScreen();
@@ -265,7 +265,7 @@ public class Gamestate {
                         }
                     }
                     break;
-                case GameStatus.GAME_OVER:
+                case GAME_OVER:
                     Utilities.SetColors((winner == 1) ? Utilities.Colors.GREEN : Utilities.Colors.RED);
                     System.out.println("Player " + winner + " wins!");
                     Utilities.ResetColors();
