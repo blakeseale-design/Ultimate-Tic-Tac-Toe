@@ -218,7 +218,7 @@ public class Gamestate {
                             currentDifficulty = Difficulty.HARD;
                             break;
                         case 3:
-                            System.out.println("**Instructions**\nPress Enter Key To Return to Main Menu");
+                            System.out.println("The First Move: You are able to play anywhere on the board.\nThe Response: If playing in hard mode, The player after that must play in the square of the Larger board that corresponds to where the previous player played on the local board. For example, if the first player played on the bottom left square of the local board, the next player must play in the bottom left board of the overall Board\nIf playing in easy mode, the current player can play anywhere on the larger board at any time.\nWinning a Local Board: When a player gets three in a row inside a small board, they win that board. If player one won, the local board will turn green. Otherwise, it will turn Red.\nWinning and Ties\nUltimate Win: The game ends instantly when a player wins three local boards in a horizontal, vertical, or diagonal row on the giant grid.Tied Local Boards: If a local board fills up without a winner, it is marked as a tie. It can count toward neither player's ultimate three-in-a-row.\nPress Enter Key To Return to Main Menu");
                             scanner.next();
                             Utilities.clearScreen();
                             break;
